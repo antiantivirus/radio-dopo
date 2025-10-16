@@ -1,18 +1,8 @@
-# sv
+## Radio Dopo
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Website for internet radio station, Radio Dopo, based in Palermo.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
+Established in 2024, Radio Dopo is a Palermo-based community radio station, working with artists, cultural workers and non-profit organizations, borne from a partnership with likeminded community radio stations Kiosk Radio in Brussels and Refuge Worldwide in Berlin.
 
 ## Developing
 
