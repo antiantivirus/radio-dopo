@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { CLOUDFLARE_ZONE_ID, CLOUDFLARE_API_TOKEN, DIRECTUS_WEBHOOK_SECRET } from '$env/static/private';
-import { PUBLIC_SITE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 
 /**
  * Webhook endpoint to purge Cloudflare cache when Directus content changes
@@ -8,9 +8,18 @@ import { PUBLIC_SITE_URL } from '$env/static/public';
  */
 export async function POST({ request }) {
   try {
+    const WEBHOOK_SECRET = env.DIRECTUS_WEBHOOK_SECRET;
+    const ZONE_ID = env.CLOUDFLARE_ZONE_ID;
+    const API_TOKEN = env.CLOUDFLARE_API_TOKEN;
+    const SITE_URL = publicEnv.PUBLIC_SITE_URL;
+
+    if (!WEBHOOK_SECRET || !ZONE_ID || !API_TOKEN) {
+      throw new Error('Missing required environment variables');
+    }
+
     // Verify webhook secret
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${DIRECTUS_WEBHOOK_SECRET}`) {
+    if (authHeader !== `Bearer ${WEBHOOK_SECRET}`) {
       console.error('Unauthorized webhook attempt');
       return json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -21,7 +30,7 @@ export async function POST({ request }) {
     console.log('Webhook received:', { collection, keys, event });
 
     // Base site URL - fallback to production if not set
-    const baseUrl = PUBLIC_SITE_URL || 'https://radiodopo.it';
+    const baseUrl = SITE_URL || 'https://radiodopo.it';
 
     // Determine which URLs to purge based on collection
     const urlsToPurge = new Set([`${baseUrl}/`]); // Always purge homepage
@@ -77,11 +86,11 @@ export async function POST({ request }) {
 
     // Purge the cache in Cloudflare
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/purge_cache`,
+      `https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/purge_cache`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+          'Authorization': `Bearer ${API_TOKEN}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

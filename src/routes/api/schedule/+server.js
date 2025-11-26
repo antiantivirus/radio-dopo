@@ -1,7 +1,14 @@
-import { PUBLIC_GOOGLE_CALENDAR_API_KEY, PUBLIC_GOOGLE_CALENDAR_ID } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 export async function GET() {
   try {
+    const API_KEY = env.PUBLIC_GOOGLE_CALENDAR_API_KEY;
+    const CALENDAR_ID = env.PUBLIC_GOOGLE_CALENDAR_ID;
+
+    if (!API_KEY || !CALENDAR_ID) {
+      throw new Error('Missing required environment variables');
+    }
+
     // Get the current time and next 7 days
     const currentTime = new Date();
     const now = new Date();
@@ -12,7 +19,7 @@ export async function GET() {
 
     // Build Google Calendar API URL
     const params = new URLSearchParams({
-      key: PUBLIC_GOOGLE_CALENDAR_API_KEY,
+      key: API_KEY,
       timeMin: now.toISOString(),
       timeMax: nextWeek.toISOString(),
       singleEvents: 'true',
@@ -20,7 +27,7 @@ export async function GET() {
       maxResults: '100'
     });
 
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(PUBLIC_GOOGLE_CALENDAR_ID)}/events?${params}`;
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?${params}`;
 
     // Fetch events from Google Calendar API
     const response = await fetch(url);
