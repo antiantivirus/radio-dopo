@@ -150,8 +150,8 @@
 
   onMount(() => {
     fetchStatus();
-    // Check every minute to match the cache time
-    const interval = setInterval(fetchStatus, 60000);
+    // Check every 30 seconds for live status and schedule updates
+    const interval = setInterval(fetchStatus, 30000);
     return () => clearInterval(interval);
   });
 </script>

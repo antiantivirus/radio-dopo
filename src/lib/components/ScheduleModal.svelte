@@ -13,8 +13,10 @@
   let scheduleByDay = $state({});
   let loading = $state(true);
   let userTimeZone = $state("");
+  let lastFetchTime = $state(0);
 
   const SCHEDULE_API = "/api/schedule";
+  const FETCH_COOLDOWN = 60000; // 1 minute in milliseconds
 
   function groupByDay(shows) {
     const grouped = {};
@@ -36,6 +38,14 @@
   }
 
   async function fetchSchedule() {
+    const now = Date.now();
+
+    // Skip fetch if we fetched within the last minute
+    if (now - lastFetchTime < FETCH_COOLDOWN) {
+      return;
+    }
+
+    loading = true;
     try {
       const response = await fetch(SCHEDULE_API);
       const result = await response.json();
@@ -47,6 +57,7 @@
         schedule = result;
         scheduleByDay = groupByDay(result);
       }
+      lastFetchTime = now;
       loading = false;
     } catch (error) {
       loading = false;
@@ -55,7 +66,7 @@
 
   export function openModal() {
     open.set(true);
-    fetchSchedule();
+    fetchSchedule(); // Fetch when opening (respects cooldown)
   }
 
   export function closeModal() {
