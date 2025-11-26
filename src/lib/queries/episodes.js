@@ -12,6 +12,7 @@ export async function getAllEpisodes() {
 				fields: ['*', { translations: ['*'] }, { show_id: ['id', 'name', 'slug', 'image', { translations: ['*'] }] }, { audio: ['filename_disk'] }],
 				sort: ['-start'],
 				filter: {
+					status: { _eq: 'published' },
 					audio: { _nnull: true } // audio isn't null
 				}
 			})
@@ -40,14 +41,17 @@ export async function getAllEpisodes() {
 export async function getEpisodes(limit = 20, offset = 0, search = '') {
 	try {
 		const filter = {
+			status: { _eq: 'published' },
 			audio: { _nnull: true }
 		};
 
 		if (search) {
 			filter._and = [
+				{ status: { _eq: 'published' } },
 				{ audio: { _nnull: true } },
 				{ title: { _contains: search } }
 			];
+			delete filter.status;
 			delete filter.audio;
 		}
 
@@ -86,6 +90,7 @@ export async function getEpisodeBySlug(slug) {
 				fields: ['*', 'translations.*', 'show_id.id', 'show_id.name', 'show_id.slug', 'show_id.image', 'show_id.translations.*', 'audio.filename_disk'],
 				filter: {
 					slug: { _eq: slug },
+					status: { _eq: 'published' },
 					audio: { _nnull: true }  // audio isn't null
 				},
 				limit: 1
@@ -120,6 +125,7 @@ export async function getEpisodesByShow(showId) {
 				fields: ['*', { show_id: ['id', 'name', 'slug'] }, { audio: ['filename_disk'] }],
 				filter: {
 					show_id: { _eq: showId },
+					status: { _eq: 'published' },
 					audio: { _nnull: true }  // audio isn't null
 				},
 				sort: ['-start'] // Sort by start date descending (newest first)
@@ -152,6 +158,7 @@ export async function getRecentEpisodes(limit = 10) {
 				sort: ['-start'],
 				limit: limit,
 				filter: {
+					status: { _eq: 'published' },
 					audio: { _nnull: true }  // audio isn't null
 				}
 			})

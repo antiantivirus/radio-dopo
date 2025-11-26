@@ -10,7 +10,10 @@ export async function getAllShows() {
 		const shows = await directus.request(
 			readItems('shows', {
 				fields: ['*', 'translations.*'],
-				sort: ['name']
+				sort: ['name'],
+				filter: {
+					status: { _eq: 'published' }
+				}
 			})
 		);
 		return shows;
@@ -29,7 +32,9 @@ export async function getAllShows() {
  */
 export async function getShows(limit = 20, offset = 0, search = '') {
 	try {
-		const filter = {};
+		const filter = {
+			status: { _eq: 'published' }
+		};
 
 		if (search) {
 			filter.name = { _contains: search };
@@ -41,7 +46,7 @@ export async function getShows(limit = 20, offset = 0, search = '') {
 				sort: ['name'],
 				limit,
 				offset,
-				filter: Object.keys(filter).length > 0 ? filter : undefined
+				filter
 			})
 		);
 		return shows;
@@ -73,7 +78,8 @@ export async function getShowBySlug(slug) {
 					}
 				],
 				filter: {
-					slug: { _eq: slug }
+					slug: { _eq: slug },
+					status: { _eq: 'published' }
 				},
 				limit: 1
 			})
@@ -82,8 +88,10 @@ export async function getShowBySlug(slug) {
 		if (shows.length > 0) {
 			const show = shows[0];
 			// Transform episodes to include proper audio URLs and show reference
+			// Also filter for only published episodes with audio
 			if (show.episodes) {
 				show.episodes = show.episodes
+					.filter(episode => episode.status === 'published' && episode.audio)
 					.map(episode => ({
 						...episode,
 						show: episode.show_id,
@@ -113,7 +121,8 @@ export async function getShowById(id) {
 			readItems('shows', {
 				fields: ['*'],
 				filter: {
-					id: { _eq: id }
+					id: { _eq: id },
+					status: { _eq: 'published' }
 				},
 				limit: 1
 			})
