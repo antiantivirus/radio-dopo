@@ -1,6 +1,5 @@
 <script>
   import "../app.css";
-  import favicon from "$lib/assets/favicon.svg";
   import AudioPlayer from "$lib/components/AudioPlayer.svelte";
   import ScheduleModal from "$lib/components/ScheduleModal.svelte";
   import MenuModal from "$lib/components/MenuModal.svelte";
@@ -22,26 +21,11 @@
     "Established in 2024, Radio Dopo is a Palermo-based community radio station, working with artists, cultural workers and non-profit organizations, borne from a partnership with like-minded community radio stations Kiosk Radio in Brussels and Refuge Worldwide in Berlin.";
 
   // Get base page title and description from page data or defaults
-  const baseTitle = $derived($page.data?.title || "Radio Dopo");
+  const pageTitle = $derived($page.data?.title || "Radio Dopo");
   const pageDescription = $derived(
     $page.data?.description || defaultDescription
   );
   const pageImage = $derived($page.data?.image || "/images/og-image.jpg");
-
-  // Dynamic page title based on audio player state
-  const pageTitle = $derived(() => {
-    const store = $audioPlayerStore;
-
-    // Only override title when actively playing
-    if (store.isPlaying && store.mode === "episode" && store.currentEpisode) {
-      return `${store.currentEpisode.title} - Radio Dopo`;
-    } else if (store.isPlaying && store.mode === "live") {
-      return "🔴 Live - Radio Dopo";
-    }
-
-    // Use page-specific title or default
-    return baseTitle;
-  });
 
   // Update HTML lang attribute when language changes
   $effect(() => {
@@ -102,7 +86,7 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href={favicon} />
+  <link rel="icon" href="favicon.svg" />
   <title>{pageTitle()}</title>
   <meta name="description" content={pageDescription} />
   <meta property="og:title" content={pageTitle()} />
