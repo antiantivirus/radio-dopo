@@ -1,90 +1,90 @@
 <script>
-  let dialog = $state();
+  import { createDialog } from "@melt-ui/svelte";
+  import { fly } from "svelte/transition";
 
+  const {
+    elements: { overlay, content, close: closeButton, portalled },
+    states: { open: isOpen },
+  } = createDialog();
+
+  export function openModal() {
+    isOpen.set(true);
+  }
+
+  export function closeModal() {
+    isOpen.set(false);
+  }
+
+  // Keep the old function names for backward compatibility
   export function open() {
-    dialog?.showModal();
+    openModal();
   }
 
   export function close() {
-    dialog?.close();
+    closeModal();
   }
 </script>
 
-<dialog
-  bind:this={dialog}
-  class="menu-modal"
-  onclick={(e) => e.target === dialog && close()}
->
-  <div class="modal-content">
-    <button class="close-button" onclick={close}>✕</button>
-  </div>
-</dialog>
-
-<style>
-  .menu-modal {
-    border: none;
-    padding: 0;
-    background: transparent;
-    max-width: none;
-    max-height: none;
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    inset: 0;
-  }
-
-  .menu-modal::backdrop {
-    background: rgba(0, 0, 0, 0.8);
-  }
-
-  .menu-modal[open] {
-    display: flex;
-    align-items: stretch;
-  }
-
-  .modal-content {
-    background: #000;
-    border-right: 1px solid white;
-    width: 400px;
-    max-width: 90vw;
-    padding: 3rem 2rem;
-    position: relative;
-    overflow-y: auto;
-    margin-right: auto;
-    animation: slideInLeft 0.3s ease-out;
-  }
-
-  .close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    line-height: 1;
-    transition: transform 0.2s;
-  }
-
-  .close-button:hover {
-    transform: scale(1.1);
-  }
-
-  @keyframes slideInLeft {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .modal-content {
-      width: 100%;
-      max-width: 100%;
-    }
-  }
-</style>
+<div use:portalled>
+  {#if $isOpen}
+    <div
+      use:overlay
+      class="fixed inset-0 bg-black/80 z-[1000]"
+      transition:fly={{ duration: 500, x: 0, opacity: 0 }}
+    />
+    <div
+      class="fixed left-0 top-0 bottom-0 bg-pink border-r border-white w-full max-w-[400px] md:max-w-[400px] max-md:max-w-full max-md:border-r-0 px-8 overflow-y-auto z-[1001]"
+      use:content
+      transition:fly={{ duration: 500, x: -400 }}
+    >
+      <button
+        class="absolute top-6 right-6 bg-transparent no-underline border-none text-black text-3xl cursor-pointer p-2 leading-none transition-transform duration-200 hover:scale-110"
+        use:closeButton>✕</button
+      >
+      <nav class="mt-8">
+        <ul class="list-none p-0 m-0 space-y-2">
+          <li>
+            <a
+              href="/"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >HOME</a
+            >
+          </li>
+          <li>
+            <a
+              href="/shows"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >SHOWS</a
+            >
+          </li>
+          <li>
+            <a
+              href="/episodes"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >EPISODES</a
+            >
+          </li>
+          <li>
+            <a
+              href="/about"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >ABOUT</a
+            >
+          </li>
+          <li>
+            <a
+              href="/partners"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >PARTNERS</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </div>
+  {/if}
+</div>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {
+@theme {
   --color-pink: #ff79ab;
   --color-orange: #f35910;
   --color-blue: #1ba9e3;
@@ -21,29 +21,90 @@
   .heading {
     font-size: 1.5rem;
     letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  h3,
+  .h3 {
+    font-size: 1.4rem;
+    letter-spacing: 1.2px;
   }
 
   h4,
   h5,
   p,
-  li {
+  li,
+  button,
+  a {
     font-size: 1.25rem;
+  }
+
+  input[type="text"],
+  input[type="search"] {
+    font-size: 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid white;
+    color: white;
+    outline: none;
+    padding: 0;
+    padding-bottom: 0.5rem;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: opacity 0.2s;
+    padding: 0;
+    font-family: inherit;
+  }
+
+  button:hover {
+    opacity: 0.7;
+  }
+
+  button.no-underline {
+    text-decoration: none;
+  }
+
+  button.no-underline:hover {
+    opacity: 1;
   }
 
   @media screen and (min-width: 768px) {
     h1,
     h2,
-    h3,
     .heading {
       font-size: 2rem;
+      letter-spacing: 1.2px;
+    }
+
+    h3,
+    .h3 {
+      font-size: 1.8rem;
       letter-spacing: 1.2px;
     }
 
     h4,
     h5,
     p,
-    li {
+    li,
+    button,
+    a {
       font-size: 1.5rem;
+    }
+
+    input[type="text"],
+    input[type="search"] {
+      font-size: 2rem;
     }
   }
 }

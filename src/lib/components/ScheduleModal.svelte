@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { createDialog } from "@melt-ui/svelte";
   import { fly } from "svelte/transition";
+  import { formatInUserTimeZone, getUserTimeZone } from "$lib/utils/dates.js";
 
   const {
     elements: { trigger, overlay, content, title, close, portalled },
@@ -11,21 +12,20 @@
   let schedule = $state([]);
   let scheduleByDay = $state({});
   let loading = $state(true);
+  let userTimeZone = $state("");
 
-  const SCHEDULE_API =
-    "https://public.radio.co/stations/s3699c5e49/embed/schedule";
+  const SCHEDULE_API = "/api/schedule";
 
   function groupByDay(shows) {
     const grouped = {};
     shows.forEach((show) => {
       if (!show.start) return;
 
-      const date = new Date(show.start);
-      const dayKey = date.toLocaleDateString("en-US", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      });
+      const dayKey = formatInUserTimeZone(
+        show.start,
+        userTimeZone,
+        "EEEE, d MMMM"
+      );
 
       if (!grouped[dayKey]) {
         grouped[dayKey] = [];
@@ -49,7 +49,6 @@
       }
       loading = false;
     } catch (error) {
-      console.error("Error fetching schedule:", error);
       loading = false;
     }
   }
@@ -64,6 +63,7 @@
   }
 
   onMount(() => {
+    userTimeZone = getUserTimeZone();
     fetchSchedule();
   });
 </script>
@@ -73,20 +73,26 @@
     <div
       use:overlay
       class="fixed inset-0 bg-black/80 z-[1000]"
-      transition:fly={{ duration: 300, x: 0, opacity: 0 }}
+      transition:fly={{ duration: 500, x: 0, opacity: 0 }}
     />
     <div
-      class="modal-content"
+      class="fixed right-0 top-0 bottom-0 bg-orange border-l border-white w-full max-w-[800px] max-md:max-w-full max-md:border-l-0 p-6 px-8 overflow-y-auto z-[1001]"
       use:content
-      transition:fly={{ duration: 300, x: 400 }}
+      transition:fly={{ duration: 500, x: 400 }}
     >
-      <button class="close-button" use:close>✕</button>
-      <div class="schedule-content">
-        <h2 use:title class="mt-0 mb-12 font-light tracking-[0.2rem]">
-          WEEKLY SCHEDULE (CET)
+      <button
+        class="absolute top-6 right-6 bg-transparent no-underline border-none text-white text-3xl cursor-pointer p-2 leading-none transition-transform duration-200 hover:scale-110"
+        use:close>✕</button
+      >
+      <div class="text-white m-0 leading-normal">
+        <h2 use:title class="mt-0 mb-2 font-light tracking-[0.2rem]">
+          WEEKLY SCHEDULE
         </h2>
+        <p class="text-white/80 mb-12 text-sm mt-0 block">
+          Displaying in your timezone: {userTimeZone || "Loading..."}
+        </p>
         {#if loading}
-          <p class="">Loading schedule...</p>
+          <p class="text-white m-0">Loading schedule...</p>
         {:else if Object.keys(scheduleByDay).length > 0}
           {#each Object.entries(scheduleByDay) as [day, shows]}
             <div class="mb-16 last:mb-0">
@@ -98,10 +104,11 @@
                   <li class="flex gap-4 my-2">
                     <div class="flex-shrink-0 font-light">
                       {#if show.start}
-                        {new Date(show.start).toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {formatInUserTimeZone(
+                          show.start,
+                          userTimeZone,
+                          "h:mm a"
+                        )}
                       {:else}
                         --:--
                       {/if}
@@ -117,61 +124,11 @@
             </div>
           {/each}
         {:else}
-          <p class="text-white">No scheduled shows available at the moment.</p>
+          <p class="text-white m-0">
+            No scheduled shows available at the moment.
+          </p>
         {/if}
       </div>
     </div>
   {/if}
 </div>
-
-<style>
-  .modal-content {
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: var(--color-orange);
-    border-left: 1px solid white;
-    width: 100%;
-    max-width: 800px;
-    padding: 3rem 2rem;
-    overflow-y: auto;
-    z-index: 1001;
-  }
-
-  .close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    line-height: 1;
-    transition: transform 0.2s;
-  }
-
-  .close-button:hover {
-    transform: scale(1.1);
-  }
-
-  .schedule-content p {
-    color: white;
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  .time-range {
-    margin-top: 0.5rem;
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    .modal-content {
-      max-width: 100%;
-      border-left: none;
-    }
-  }
-</style>
