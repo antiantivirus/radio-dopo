@@ -67,11 +67,6 @@ export async function POST({ request }) {
         // Already added above
         break;
 
-      case 'schedule':
-        // Schedule affects homepage and could affect show pages
-        urlsToPurge.add(`${baseUrl}/shows`);
-        break;
-
       default:
         console.warn(`Unknown collection: ${collection}`);
     }
