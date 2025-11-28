@@ -143,11 +143,13 @@
               alt={show.name}
               width="full"
               height="auto"
-              class="w-full h-full object-cover block"
+              class="w-full h-full block"
             />
           {/if}
           {#if description}
-            <Markdown class="p-3 pt-0 md:p-6 md:px-0" content={description} />
+            <div class="p-3 pt-0 md:p-6 md:px-0 description-clamp">
+              <Markdown content={description} />
+            </div>
           {/if}
         </a>
       {/each}
@@ -161,3 +163,16 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .description-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .description-clamp :global(*) {
+    margin: 0;
+  }
+</style>

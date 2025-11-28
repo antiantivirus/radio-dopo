@@ -64,7 +64,24 @@
   </div>
 
   <div class="grid grid-cols-[3fr_8fr] gap-8 max-md:grid-cols-1">
-    <div></div>
+    <div>
+      {#if data.show.links && data.show.links.length > 0}
+        <ul class="list-none p-0 m-0 flex flex-col gap-2">
+          {#each data.show.links as link}
+            <li>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-white underline hover:opacity-70 transition-opacity"
+              >
+                {link.title || link.url}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
     <div>
       <h2
         class="font-normal mb-2 text-white uppercase tracking-[0.1em] text-left"
