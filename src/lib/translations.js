@@ -35,7 +35,7 @@ export const translations = {
     page_episodes: "EPISODI",
     page_about: "CHI SIAMO",
     page_partners: "PARTNER",
-    weekly_schedule: "PALESTINO",
+    weekly_schedule: "Palinsesto",
     search_placeholder: "Cerca programmi per titolo, frequenza o descrizione...",
     search_no_results: "Nessun programma trovato per \"{query}\"",
     search_clear: "Cancella ricerca",
