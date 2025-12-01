@@ -29,11 +29,11 @@
   {#if $isOpen}
     <div
       use:overlay
-      class="fixed inset-0 bg-black/80 z-[1000]"
+      class="fixed inset-0 bg-black/80 z-[10000]"
       transition:fly={{ duration: 500, x: 0, opacity: 0 }}
     />
     <div
-      class="fixed left-0 top-0 bottom-0 bg-pink border-r border-white w-full max-w-[400px] md:max-w-[400px] max-md:max-w-full max-md:border-r-0 px-8 overflow-y-auto z-[1001]"
+      class="fixed left-0 top-0 bottom-0 bg-pink border-r border-white w-full max-w-[400px] md:max-w-[400px] max-md:max-w-full max-md:border-r-0 px-8 overflow-y-auto z-[10001]"
       use:content
       transition:fly={{ duration: 500, x: -400 }}
     >
@@ -57,6 +57,14 @@
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
               >SHOWS</a
+            >
+          </li>
+          <li class="md:hidden">
+            <a
+              href="/schedule"
+              onclick={closeModal}
+              class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
+              >SCHEDULE</a
             >
           </li>
           <li>

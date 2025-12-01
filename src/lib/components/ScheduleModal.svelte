@@ -83,11 +83,11 @@
   {#if $open}
     <div
       use:overlay
-      class="fixed inset-0 bg-black/80 z-[1000]"
+      class="fixed inset-0 bg-black/80 z-[10000]"
       transition:fly={{ duration: 500, x: 0, opacity: 0 }}
     />
     <div
-      class="fixed right-0 top-0 bottom-0 bg-orange border-l border-white w-full max-w-[800px] max-md:max-w-full max-md:border-l-0 p-6 px-8 overflow-y-auto z-[1001]"
+      class="fixed right-0 top-0 bottom-0 bg-orange border-l border-white w-full max-w-[800px] max-md:max-w-full max-md:border-l-0 p-6 px-8 overflow-y-auto z-[10001]"
       use:content
       transition:fly={{ duration: 500, x: 400 }}
     >

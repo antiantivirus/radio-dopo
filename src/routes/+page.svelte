@@ -11,9 +11,11 @@
   let showImage = $state(false);
 
   onMount(() => {
+    // Position images on left side or bottom right (not top right)
+    const side = Math.random() > 0.5 ? 1 : 0;
     imagePosition = {
-      x: Math.random() * 100,
-      y: 30 + Math.random() * 45,
+      x: side === 1 ? 85 + Math.random() * 15 : Math.random() * 15,
+      y: side === 1 ? 60 + Math.random() * 30 : 30 + Math.random() * 45,
     };
     setTimeout(() => {
       showImage = true;
@@ -22,7 +24,7 @@
 </script>
 
 <div
-  class="flex flex-col items-center justify-center p-8 min-h-full gap-16 max-md:p-0 max-md:gap-8"
+  class="flex flex-col items-center justify-center p-8 min-h-full gap-16 max-md:p-0 max-md:gap-8 max-md:justify-start"
 >
   <div
     class="hidden md:flex flex-col items-center justify-center relative w-[50vw] max-w-[800px]"
