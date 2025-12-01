@@ -30,12 +30,12 @@ export const translations = {
     nav_episodes: "Episodi",
     nav_about: "Chi Siamo",
     nav_partners: "Partner",
-    nav_schedule: "Programma",
+    nav_schedule: "Palinsesto",
     page_shows: "Programmi",
     page_episodes: "EPISODI",
     page_about: "CHI SIAMO",
     page_partners: "PARTNER",
-    weekly_schedule: "PROGRAMMA SETTIMANALE",
+    weekly_schedule: "PALESTINO",
     search_placeholder: "Cerca programmi per titolo, frequenza o descrizione...",
     search_no_results: "Nessun programma trovato per \"{query}\"",
     search_clear: "Cancella ricerca",
@@ -44,7 +44,7 @@ export const translations = {
     lang_en: "EN",
     lang_it: "IT",
     menu: "MENU",
-    schedule: "PROGRAMMA",
+    schedule: "PALINSESTO",
     view_archive: "Vedi Archivio",
     archive: "ARCHIVIO"
   }
