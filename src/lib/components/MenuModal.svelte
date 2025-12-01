@@ -1,6 +1,8 @@
 <script>
   import { createDialog } from "@melt-ui/svelte";
   import { fly } from "svelte/transition";
+  import { currentLanguage } from "$lib/stores/language.js";
+  import { t } from "$lib/translations.js";
 
   const {
     elements: { overlay, content, close: closeButton, portalled },
@@ -48,7 +50,7 @@
               href="/"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >HOME</a
+              >{t("nav_home", $currentLanguage).toUpperCase()}</a
             >
           </li>
           <li>
@@ -56,7 +58,7 @@
               href="/shows"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >SHOWS</a
+              >{t("nav_shows", $currentLanguage).toUpperCase()}</a
             >
           </li>
           <li class="md:hidden">
@@ -64,7 +66,7 @@
               href="/schedule"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >SCHEDULE</a
+              >{t("nav_schedule", $currentLanguage).toUpperCase()}</a
             >
           </li>
           <li>
@@ -72,7 +74,7 @@
               href="/episodes"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >EPISODES</a
+              >{t("nav_episodes", $currentLanguage).toUpperCase()}</a
             >
           </li>
           <li>
@@ -80,7 +82,7 @@
               href="/about"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >ABOUT</a
+              >{t("nav_about", $currentLanguage).toUpperCase()}</a
             >
           </li>
           <li>
@@ -88,7 +90,7 @@
               href="/partners"
               onclick={closeModal}
               class="heading font-normal text-black no-underline inline-block transition-all duration-200 hover:underline"
-              >PARTNERS</a
+              >{t("nav_partners", $currentLanguage).toUpperCase()}</a
             >
           </li>
         </ul>

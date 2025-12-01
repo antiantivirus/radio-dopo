@@ -1,6 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import { formatInUserTimeZone, getUserTimeZone } from "$lib/utils/dates.js";
+  import { currentLanguage } from "$lib/stores/language.js";
+  import { t } from "$lib/translations.js";
 
   let schedule = $state([]);
   let scheduleByDay = $state({});
@@ -9,16 +11,23 @@
 
   const SCHEDULE_API = "/api/schedule";
 
-  function groupByDay(shows) {
+  function groupByDay(shows, lang) {
     const grouped = {};
     shows.forEach((show) => {
       if (!show.start) return;
 
-      const dayKey = formatInUserTimeZone(
+      const format = lang === 'it' ? "EEEE d MMMM" : "EEEE, d MMMM";
+      let dayKey = formatInUserTimeZone(
         show.start,
         userTimeZone,
-        "EEEE, d MMMM"
+        format,
+        lang
       );
+
+      // Capitalize first letter for Italian
+      if (lang === 'it') {
+        dayKey = dayKey.charAt(0).toUpperCase() + dayKey.slice(1);
+      }
 
       if (!grouped[dayKey]) {
         grouped[dayKey] = [];
@@ -36,16 +45,23 @@
 
       if (result.data && Array.isArray(result.data)) {
         schedule = result.data;
-        scheduleByDay = groupByDay(result.data);
+        scheduleByDay = groupByDay(result.data, $currentLanguage);
       } else if (Array.isArray(result)) {
         schedule = result;
-        scheduleByDay = groupByDay(result);
+        scheduleByDay = groupByDay(result, $currentLanguage);
       }
       loading = false;
     } catch (error) {
       loading = false;
     }
   }
+
+  // Re-group when language changes
+  $effect(() => {
+    if (schedule.length > 0) {
+      scheduleByDay = groupByDay(schedule, $currentLanguage);
+    }
+  });
 
   onMount(() => {
     userTimeZone = getUserTimeZone();
@@ -57,7 +73,7 @@
   <div class="px-3 md:px-6">
     <header class="text-left mb-12">
       <h1 class="font-normal m-0 text-white uppercase tracking-[0.1em]">
-        WEEKLY SCHEDULE
+        {t("weekly_schedule", $currentLanguage)}
       </h1>
       <p class="text-white/80 mb-0 text-sm mt-2 block">
         Displaying in your timezone: {userTimeZone || "Loading..."}
@@ -79,7 +95,8 @@
                     {formatInUserTimeZone(
                       show.start,
                       userTimeZone,
-                      "h:mm a"
+                      "h:mm a",
+                      $currentLanguage
                     )}
                   {:else}
                     --:--

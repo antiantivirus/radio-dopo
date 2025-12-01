@@ -3,6 +3,7 @@
   import DirectusImage from "$lib/components/DirectusImage.svelte";
   import Markdown from "$lib/components/Markdown.svelte";
   import { currentLanguage, getTranslation } from "$lib/stores/language.js";
+  import { t } from "$lib/translations.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
 
@@ -80,7 +81,7 @@
   <div class="px-3 md:px-6">
     <header class="text-left mb-12">
       <h1 class="font-normal m-0 text-white uppercase tracking-[0.1em]">
-        SHOWS
+        {t("page_shows", lang)}
       </h1>
     </header>
 

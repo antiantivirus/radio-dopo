@@ -3,6 +3,8 @@
   import { createDialog } from "@melt-ui/svelte";
   import { fly } from "svelte/transition";
   import { formatInUserTimeZone, getUserTimeZone } from "$lib/utils/dates.js";
+  import { currentLanguage } from "$lib/stores/language.js";
+  import { t } from "$lib/translations.js";
 
   const {
     elements: { trigger, overlay, content, title, close, portalled },
@@ -18,16 +20,23 @@
   const SCHEDULE_API = "/api/schedule";
   const FETCH_COOLDOWN = 60000; // 1 minute in milliseconds
 
-  function groupByDay(shows) {
+  function groupByDay(shows, lang) {
     const grouped = {};
     shows.forEach((show) => {
       if (!show.start) return;
 
-      const dayKey = formatInUserTimeZone(
+      const format = lang === 'it' ? "EEEE d MMMM" : "EEEE, d MMMM";
+      let dayKey = formatInUserTimeZone(
         show.start,
         userTimeZone,
-        "EEEE, d MMMM"
+        format,
+        lang
       );
+
+      // Capitalize first letter for Italian
+      if (lang === 'it') {
+        dayKey = dayKey.charAt(0).toUpperCase() + dayKey.slice(1);
+      }
 
       if (!grouped[dayKey]) {
         grouped[dayKey] = [];
@@ -52,10 +61,10 @@
 
       if (result.data && Array.isArray(result.data)) {
         schedule = result.data;
-        scheduleByDay = groupByDay(result.data);
+        scheduleByDay = groupByDay(result.data, $currentLanguage);
       } else if (Array.isArray(result)) {
         schedule = result;
-        scheduleByDay = groupByDay(result);
+        scheduleByDay = groupByDay(result, $currentLanguage);
       }
       lastFetchTime = now;
       loading = false;
@@ -72,6 +81,13 @@
   export function closeModal() {
     open.set(false);
   }
+
+  // Re-group when language changes
+  $effect(() => {
+    if (schedule.length > 0) {
+      scheduleByDay = groupByDay(schedule, $currentLanguage);
+    }
+  });
 
   onMount(() => {
     userTimeZone = getUserTimeZone();
@@ -97,7 +113,7 @@
       >
       <div class="text-white m-0 leading-normal">
         <h2 use:title class="mt-0 mb-2 font-light tracking-[0.2rem]">
-          WEEKLY SCHEDULE
+          {t("weekly_schedule", $currentLanguage)}
         </h2>
         <p class="text-white/80 mb-12 text-sm mt-0 block">
           Displaying in your timezone: {userTimeZone || "Loading..."}
@@ -118,7 +134,8 @@
                         {formatInUserTimeZone(
                           show.start,
                           userTimeZone,
-                          "h:mm a"
+                          "h:mm a",
+                          $currentLanguage
                         )}
                       {:else}
                         --:--
