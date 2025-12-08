@@ -28,7 +28,17 @@
    * @param {string} language
    */
   function getDescription(show, language) {
-    return getTranslation(show.translations, language, "description");
+    const description = getTranslation(
+      show.translations,
+      language,
+      "description"
+    );
+    if (!description) return "";
+    // Truncate to 100 characters
+    if (description.length > 100) {
+      return description.slice(0, 100) + "...";
+    }
+    return description;
   }
 
   // Handle search
@@ -142,13 +152,11 @@
             <DirectusImage
               src={show.image}
               alt={show.name}
-              width="full"
-              height="auto"
-              class="w-full h-full block"
+              class="w-full h-auto block"
             />
           {/if}
           {#if description}
-            <div class="p-3 pt-0 md:p-6 md:px-0 description-clamp">
+            <div class="p-3 pt-0 md:p-6 md:px-0">
               <Markdown content={description} />
             </div>
           {/if}
@@ -164,16 +172,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-  .description-clamp {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .description-clamp :global(*) {
-    margin: 0;
-  }
-</style>
