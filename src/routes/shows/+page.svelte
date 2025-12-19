@@ -17,6 +17,7 @@
 
   let searchQuery = $state($page.url.searchParams.get("search") || "");
   let isLoading = $state(false);
+  let isSearching = $state(false);
   let allShows = $state(data.shows);
   let hasMore = $state(data.hasMore);
 
@@ -45,17 +46,19 @@
   /** @type {ReturnType<typeof setTimeout> | undefined} */
   let searchTimeout;
   function handleSearch() {
+    isSearching = true;
     clearTimeout(searchTimeout);
-    isLoading = true;
     searchTimeout = setTimeout(async () => {
       const params = new URLSearchParams();
       if (searchQuery) {
         params.set("search", searchQuery);
       }
       await goto(`/shows?${params.toString()}`, { keepFocus: true });
-      isLoading = false;
-    }, 500);
+      isSearching = false;
+    }, 400);
   }
+
+  let loadMoreTrigger = $state(/** @type {HTMLDivElement | undefined} */ (undefined));
 
   // Load more shows
   async function loadMore() {
@@ -82,6 +85,27 @@
     allShows = data.shows;
     hasMore = data.hasMore;
     isLoading = false;
+    isSearching = false;
+  });
+
+  // Set up intersection observer for infinite scroll
+  $effect(() => {
+    if (!loadMoreTrigger) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(loadMoreTrigger);
+
+    return () => {
+      observer.disconnect();
+    };
   });
 </script>
 
@@ -95,7 +119,7 @@
       </h1>
     </header>
 
-    <div class="mb-12">
+    <div class="mb-12 relative">
       <input
         type="text"
         bind:value={searchQuery}
@@ -103,11 +127,28 @@
         placeholder="Search"
         class="w-full md:max-w-3/12 pb-0"
       />
+      {#if isSearching}
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 md:right-[calc(75%+0.5rem)]">
+          <img
+            src="/images/onAir.svg"
+            alt="Searching"
+            class="w-5 h-5 animate-pulse brightness-0 invert"
+          />
+        </div>
+      {/if}
     </div>
   </div>
 
   <div class="flex flex-col border-t border-white">
-    {#if isLoading}
+    {#if isSearching && allShows.length === 0}
+      <div class="flex justify-center items-center py-16">
+        <img
+          src="/images/onAir.svg"
+          alt="Loading"
+          class="w-8 h-8 animate-pulse brightness-0 invert"
+        />
+      </div>
+    {:else if isLoading && allShows.length === 0}
       <div class="flex justify-center items-center py-16">
         <img
           src="/images/onAir.svg"
@@ -131,10 +172,10 @@
         {@const description = getDescription(show, lang)}
         <a
           href="/shows/{show.slug}"
-          class="grid grid-cols-[3fr_4fr_4fr] gap-8 items-start border-b border-white no-underline text-white transition-opacity hover:opacity-80 md:px-6 py-3 md:py-0 max-md:grid-cols-1 max-md:gap-4"
+          class="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-[3fr_4fr_4fr] gap-4 lg:gap-8 items-start border-b border-white no-underline text-white transition-opacity hover:opacity-80"
         >
           <div
-            class="flex flex-col gap-2 justify-between h-full p-3 pb-0 md:p-6 md:px-0"
+            class="flex flex-col gap-2 justify-between h-full p-3 pb-0 min-[480px]:px-6 min-[480px]:pb-0"
           >
             <h2 class="font-normal m-0 text-white underline">
               {show.name}
@@ -149,24 +190,30 @@
             {/if}
           </div>
           {#if show.image}
-            <DirectusImage
-              src={show.image}
-              alt={show.name}
-              class="w-full h-auto block"
-            />
+            <div class="w-full aspect-square overflow-hidden">
+              <DirectusImage
+                src={show.image}
+                alt={show.name}
+                class="w-full h-full object-cover block"
+              />
+            </div>
           {/if}
           {#if description}
-            <div class="p-3 pt-0 md:p-6 md:px-0">
+            <div class="lg:block hidden">
               <Markdown content={description} />
             </div>
           {/if}
         </a>
       {/each}
       {#if hasMore}
-        <div class="flex justify-center mt-8 px-4 md:px-8">
-          <button onclick={loadMore} disabled={isLoading}>
-            {isLoading ? "Loading..." : "Load More"}
-          </button>
+        <div bind:this={loadMoreTrigger} class="flex justify-center mt-8 py-4">
+          {#if isLoading}
+            <img
+              src="/images/onAir.svg"
+              alt="Loading"
+              class="w-8 h-8 animate-pulse brightness-0 invert"
+            />
+          {/if}
         </div>
       {/if}
     {/if}

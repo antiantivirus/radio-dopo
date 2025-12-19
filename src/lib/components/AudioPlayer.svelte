@@ -64,7 +64,11 @@
 
     const store = $audioPlayerStore;
 
-    if (store.isPlaying && audio.paused && audio.readyState >= 2) {
+    if (store.isPlaying && audio.paused) {
+      // If in live mode and resuming playback, reload the stream to get current live moment
+      if (store.mode === "live" && audio.readyState >= 2) {
+        audio.load();
+      }
       audio.play().catch(() => {});
     } else if (!store.isPlaying && !audio.paused) {
       audio.pause();
@@ -205,8 +209,13 @@
         >
       </div>
     {:else if $audioPlayerStore.mode === "episode" && $audioPlayerStore.currentEpisode}
-      <!-- Show episode title when paused -->
-      <div class="min-w-0 flex-1">
+      <!-- Show episode and show title when paused -->
+      <div class="min-w-0 flex-1 flex flex-col">
+        {#if $audioPlayerStore.currentEpisode.show?.name}
+          <p class="truncate m-0 text-white uppercase">
+            {$audioPlayerStore.currentEpisode.show.name}
+          </p>
+        {/if}
         <p class="truncate m-0">
           {$audioPlayerStore.currentEpisode.title}
         </p>
@@ -229,7 +238,17 @@
 
   <div class="flex items-center gap-3 flex-shrink-0">
     {#if $audioPlayerStore.mode === "episode"}
-      <button onclick={handleBackToLive}> Back to Live </button>
+      {#if $audioPlayerStore.currentEpisode?.show?.slug}
+        <a
+          href="/shows/{$audioPlayerStore.currentEpisode.show.slug}"
+          class="text-xs no-underline"
+        >
+          INFO
+        </a>
+      {/if}
+      <button onclick={handleBackToLive} class="text-xs no-underline">
+        BACK TO LIVE
+      </button>
     {/if}
 
     <img

@@ -49,7 +49,12 @@ export async function getEpisodes(limit = 20, offset = 0, search = '') {
 			filter._and = [
 				{ status: { _eq: 'published' } },
 				{ audio: { _nnull: true } },
-				{ title: { _contains: search } }
+				{
+					_or: [
+						{ title: { _contains: search } },
+						{ show_id: { name: { _contains: search } } }
+					]
+				}
 			];
 			delete filter.status;
 			delete filter.audio;
