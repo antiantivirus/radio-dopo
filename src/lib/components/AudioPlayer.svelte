@@ -209,13 +209,8 @@
         >
       </div>
     {:else if $audioPlayerStore.mode === "episode" && $audioPlayerStore.currentEpisode}
-      <!-- Show episode and show title when paused -->
-      <div class="min-w-0 flex-1 flex flex-col">
-        {#if $audioPlayerStore.currentEpisode.show?.name}
-          <p class="truncate m-0 text-white uppercase">
-            {$audioPlayerStore.currentEpisode.show.name}
-          </p>
-        {/if}
+      <!-- Show episode title when paused -->
+      <div class="min-w-0 flex-1">
         <p class="truncate m-0">
           {$audioPlayerStore.currentEpisode.title}
         </p>
@@ -238,9 +233,9 @@
 
   <div class="flex items-center gap-3 flex-shrink-0">
     {#if $audioPlayerStore.mode === "episode"}
-      {#if $audioPlayerStore.currentEpisode?.show?.slug}
+      {#if $audioPlayerStore.currentEpisode?.slug}
         <a
-          href="/shows/{$audioPlayerStore.currentEpisode.show.slug}"
+          href="/episodes/{$audioPlayerStore.currentEpisode.slug}"
           class="text-xs no-underline"
         >
           INFO
