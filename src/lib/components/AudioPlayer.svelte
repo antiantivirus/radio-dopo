@@ -209,10 +209,10 @@
         >
       </div>
     {:else if $audioPlayerStore.mode === "episode" && $audioPlayerStore.currentEpisode}
-      <!-- Show episode title when paused -->
+      <!-- Show episode title when paused, fallback to show title -->
       <div class="min-w-0 flex-1">
         <p class="truncate m-0">
-          {$audioPlayerStore.currentEpisode.title}
+          {($audioPlayerStore.currentEpisode.title?.trim() || $audioPlayerStore.currentEpisode.show?.name || "Episode")}
         </p>
       </div>
     {:else}
