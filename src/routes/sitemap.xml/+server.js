@@ -6,7 +6,7 @@ import { getAllShows } from '$lib/queries/shows.js';
  * @type {import('./$types').RequestHandler}
  */
 export async function GET() {
-	const baseUrl = 'https://radiodopo.com';
+	const baseUrl = 'https://radiodopo.it';
 
 	try {
 		// Fetch all episodes and shows
